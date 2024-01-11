@@ -1,5 +1,5 @@
 # 💫 About Me:
-hi its me abdullah
+hi its me Abdullah Zaheer 
 
 
 # 💻 Tech Stack:
