@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Dynamic Terminal GitHub Profile Banner Generator
+Dynamic Terminal GitHub Profile Banner Generator (v2 - HD Edition)
 Author: Pair-programmed for Abdullah Zaheer (@Abdullah-Zaheer)
 """
 
@@ -9,13 +9,13 @@ import numpy as np
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance, ImageDraw
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import cdist
-from scipy.ndimage import binary_fill_holes
 
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCRATCH_DIR = os.path.join(WORKSPACE_DIR, '.cache_data')
 os.makedirs(SCRATCH_DIR, exist_ok=True)
 
-IMG_PATH = '/Users/abdullahzaheer/.gemini/antigravity-ide/brain/035750bf-e298-44f0-ade7-0fbd033fc780/.user_uploaded/media_1787409562685.jpg'
+# Use the cleanly segmented transparent photo
+IMG_PATH = '/Users/abdullahzaheer/.gemini/antigravity-ide/brain/035750bf-e298-44f0-ade7-0fbd033fc780/.user_uploaded/media_1787410737668.png'
 
 TOTAL_W = 1180
 TOTAL_H = 610
@@ -24,58 +24,34 @@ PORTRAIT_W = 280
 PORTRAIT_H = 320
 
 # 1. Load and process image
-img = Image.open(IMG_PATH).convert('RGB')
-w, h = img.size
-crop_box = (int(w * 0.05), int(h * 0.05), int(w * 0.95), int(h * 0.88))
-cropped = img.crop(crop_box)
+img = Image.open(IMG_PATH)
+alpha = np.array(img.split()[3])
+ys, xs = np.where(alpha > 20)
+min_y, max_y = min(ys), max(ys)
+min_x, max_x = min(xs), max(xs)
+
+cropped = img.crop((min_x, min_y, max_x, max_y))
 resized = cropped.resize((PORTRAIT_W, PORTRAIT_H), Image.Resampling.LANCZOS)
-arr = np.array(resized, dtype=np.float32)
-r, g, b = arr[:,:,0], arr[:,:,1], arr[:,:,2]
 
-y_coords, x_coords = np.mgrid[0:PORTRAIT_H, 0:PORTRAIT_W]
+r, g, b, a = resized.split()
+rgb = Image.merge('RGB', (r, g, b))
+mask = np.array(a) > 40
 
-is_in_bounds = np.zeros((PORTRAIT_H, PORTRAIT_W), dtype=bool)
-for y in range(PORTRAIT_H):
-    if y < 55:
-        x_min, x_max = 140, 140
-    elif y < 75:
-        x_min, x_max = 115, 160
-    elif y < 115:
-        x_min, x_max = 105, 162
-    elif y < 140:
-        x_min, x_max = 104, 166
-    elif y < 185:
-        x_min, x_max = 100, 172
-    elif y < 210:
-        x_min, x_max = 75, 205
-    elif y < 245:
-        x_min, x_max = 45, 235
-    elif y < 280:
-        x_min, x_max = 28, 248
-    else:
-        x_min, x_max = 25, 245
-    is_in_bounds[y, x_min:x_max] = True
-
-is_gold_stone = (r > 95) & (g > 65) & ((r - b) > 40) & ((g - b) > 15)
-is_face_core = (y_coords >= 100) & (y_coords <= 170) & (x_coords >= 110) & (x_coords <= 160)
-fg_mask = is_in_bounds & ((~is_gold_stone) | is_face_core)
-fg_mask = binary_fill_holes(fg_mask) & is_in_bounds
-
-# Contrast & Sharpening
-gray = resized.convert('L')
+# Grayscale contrast & sharpening
+gray = rgb.convert('L')
 gray_auto = ImageOps.autocontrast(gray, cutoff=1)
 gray_sharp = gray_auto.filter(ImageFilter.UnsharpMask(radius=3, percent=140))
 enhancer = ImageEnhance.Contrast(gray_sharp)
-gray_enhanced = enhancer.enhance(1.35)
+gray_enhanced = enhancer.enhance(1.3)
 gray_arr = np.array(gray_enhanced, dtype=np.float32)
 
 dark_input = gray_arr.copy()
-dark_input[~fg_mask] = 0.0
+dark_input[~mask] = 0.0
 
 light_input = 255.0 - gray_arr
-light_input[~fg_mask] = 0.0
+light_input[~mask] = 0.0
 
-def floyd_steinberg_dither(img_2d, mask):
+def floyd_steinberg_dither(img_2d, mask_2d):
     h, w = img_2d.shape
     arr = img_2d.copy().astype(np.float32)
     out = np.zeros((h, w), dtype=np.uint8)
@@ -87,7 +63,7 @@ def floyd_steinberg_dither(img_2d, mask):
             x_range = range(w - 1, -1, -1)
             direction = -1
         for x in x_range:
-            if not mask[y, x]:
+            if not mask_2d[y, x]:
                 arr[y, x] = 0
                 out[y, x] = 0
                 continue
@@ -115,76 +91,79 @@ def floyd_steinberg_dither(img_2d, mask):
                         arr[y + 1, x - 1] += err * (1.0 / 16.0)
     return out
 
-dither_dark = floyd_steinberg_dither(dark_input, fg_mask)
-dither_light = floyd_steinberg_dither(light_input, fg_mask)
+dither_dark = floyd_steinberg_dither(dark_input, mask)
+dither_light = floyd_steinberg_dither(light_input, mask)
 print(f"Dark mode portrait dots: {np.sum(dither_dark)}")
 print(f"Light mode portrait dots: {np.sum(dither_light)}")
 
-# 2. Logos & Travellers Generation
-# Selected for Software Engineer (Python), Security Researcher (Security Shield), System Architect (Docker Whale)
-N_TRAVELLERS = 750
+# 2. HD Morphing Logos (900 Traveller Dots)
+N_TRAVELLERS = 900
 
-def render_python_logo():
+def render_python_hd():
     img = Image.new('L', (PORTRAIT_W, PORTRAIT_H), 0)
     draw = ImageDraw.Draw(img)
     cx, cy = PORTRAIT_W // 2, PORTRAIT_H // 2
-    draw.rounded_rectangle([cx - 55, cy - 65, cx + 25, cy - 25], radius=15, fill=255)
-    draw.rounded_rectangle([cx + 5, cy - 65, cx + 55, cy + 25], radius=15, fill=255)
-    draw.rectangle([cx - 20, cy - 25, cx + 25, cy + 5], fill=255)
-    draw.ellipse([cx - 30, cy - 50, cx - 20, cy - 40], fill=0)
-    draw.rounded_rectangle([cx - 25, cy + 25, cx + 55, cy + 65], radius=15, fill=255)
-    draw.rounded_rectangle([cx - 55, cy - 25, cx - 5, cy + 65], radius=15, fill=255)
-    draw.rectangle([cx - 25, cy - 5, cx + 20, cy + 25], fill=255)
-    draw.ellipse([cx + 20, cy + 40, cx + 30, cy + 50], fill=0)
+    draw.rounded_rectangle([cx - 56, cy - 66, cx + 24, cy - 24], radius=16, fill=255)
+    draw.rounded_rectangle([cx + 4, cy - 66, cx + 56, cy + 24], radius=16, fill=255)
+    draw.rectangle([cx - 22, cy - 24, cx + 24, cy + 6], fill=255)
+    draw.ellipse([cx - 32, cy - 52, cx - 20, cy - 40], fill=0)
+    draw.rounded_rectangle([cx - 24, cy + 24, cx + 56, cy + 66], radius=16, fill=255)
+    draw.rounded_rectangle([cx - 56, cy - 24, cx - 4, cy + 66], radius=16, fill=255)
+    draw.rectangle([cx - 24, cy - 6, cx + 22, cy + 24], fill=255)
+    draw.ellipse([cx + 20, cy + 40, cx + 32, cy + 52], fill=0)
     return np.array(img) > 128
 
-def render_security_shield():
+def render_shield_hd():
     img = Image.new('L', (PORTRAIT_W, PORTRAIT_H), 0)
     draw = ImageDraw.Draw(img)
     cx, cy = PORTRAIT_W // 2, PORTRAIT_H // 2 - 5
-    shield_pts = [
-        (cx - 65, cy - 65), (cx + 65, cy - 65), (cx + 65, cy - 10),
-        (cx + 45, cy + 45), (cx, cy + 75), (cx - 45, cy + 45), (cx - 65, cy - 10),
+    shield_outer = [
+        (cx - 70, cy - 70), (cx + 70, cy - 70),
+        (cx + 70, cy - 10), (cx + 50, cy + 50),
+        (cx, cy + 82),
+        (cx - 50, cy + 50), (cx - 70, cy - 10)
     ]
-    draw.polygon(shield_pts, fill=255)
-    inner_pts = [
-        (cx - 50, cy - 50), (cx + 50, cy - 50), (cx + 50, cy - 10),
-        (cx + 35, cy + 35), (cx, cy + 60), (cx - 35, cy + 35), (cx - 50, cy - 10),
+    draw.polygon(shield_outer, fill=255)
+    shield_inner = [
+        (cx - 54, cy - 54), (cx + 54, cy - 54),
+        (cx + 54, cy - 10), (cx + 38, cy + 38),
+        (cx, cy + 64),
+        (cx - 38, cy + 38), (cx - 54, cy - 10)
     ]
-    draw.polygon(inner_pts, fill=0)
-    draw.rounded_rectangle([cx - 22, cy - 35, cx + 22, cy - 5], radius=10, fill=255)
-    draw.rounded_rectangle([cx - 12, cy - 25, cx + 12, cy - 5], radius=6, fill=0)
-    draw.rounded_rectangle([cx - 28, cy - 10, cx + 28, cy + 32], radius=6, fill=255)
-    draw.ellipse([cx - 6, cy + 2, cx + 6, cy + 14], fill=0)
-    draw.polygon([(cx - 4, cy + 10), (cx + 4, cy + 10), (cx + 6, cy + 24), (cx - 6, cy + 24)], fill=0)
+    draw.polygon(shield_inner, fill=0)
+    draw.rounded_rectangle([cx - 24, cy - 38, cx + 24, cy - 4], radius=12, fill=255)
+    draw.rounded_rectangle([cx - 14, cy - 28, cx + 14, cy - 4], radius=7, fill=0)
+    draw.rounded_rectangle([cx - 30, cy - 8, cx + 30, cy + 36], radius=8, fill=255)
+    draw.ellipse([cx - 7, cy + 4, cx + 7, cy + 18], fill=0)
+    draw.polygon([(cx - 5, cy + 14), (cx + 5, cy + 14), (cx + 7, cy + 28), (cx - 7, cy + 28)], fill=0)
     return np.array(img) > 128
 
-def render_docker_logo():
+def render_docker_hd():
     img = Image.new('L', (PORTRAIT_W, PORTRAIT_H), 0)
     draw = ImageDraw.Draw(img)
     cx, cy = PORTRAIT_W // 2, PORTRAIT_H // 2
-    cw, ch, gap = 14, 12, 3
+    cw, ch, gap = 15, 13, 3
     for i in range(5):
-        bx = cx - 45 + i * (cw + gap)
-        by = cy - 20
+        bx = cx - 48 + i * (cw + gap)
+        by = cy - 22
         draw.rectangle([bx, by, bx + cw, by + ch], fill=255)
     for i in range(4):
-        bx = cx - 28 + i * (cw + gap)
-        by = cy - 20 - ch - gap
+        bx = cx - 30 + i * (cw + gap)
+        by = cy - 22 - ch - gap
         draw.rectangle([bx, by, bx + cw, by + ch], fill=255)
-    bx = cx - 11
-    by = cy - 20 - (ch + gap) * 2
+    bx = cx - 12
+    by = cy - 22 - (ch + gap) * 2
     draw.rectangle([bx, by, bx + cw, by + ch], fill=255)
     hull = [
-        (cx - 75, cy - 5), (cx - 70, cy + 15), (cx - 50, cy + 35),
-        (cx + 20, cy + 40), (cx + 65, cy + 25), (cx + 85, cy + 5),
-        (cx + 80, cy - 15), (cx + 70, cy - 10), (cx + 65, cy + 5),
-        (cx + 45, cy + 5), (cx + 45, cy - 5), (cx - 50, cy - 5), (cx - 75, cy - 5)
+        (cx - 80, cy - 6), (cx - 75, cy + 16), (cx - 55, cy + 38),
+        (cx + 25, cy + 42), (cx + 70, cy + 26), (cx + 90, cy + 6),
+        (cx + 85, cy - 16), (cx + 74, cy - 10), (cx + 68, cy + 6),
+        (cx + 48, cy + 6), (cx + 48, cy - 6), (cx - 54, cy - 6), (cx - 80, cy - 6)
     ]
     draw.polygon(hull, fill=255)
-    draw.ellipse([cx - 58, cy + 8, cx - 52, cy + 14], fill=0)
-    draw.ellipse([cx + 55, cy - 25, cx + 62, cy - 18], fill=255)
-    draw.ellipse([cx + 68, cy - 35, cx + 75, cy - 28], fill=255)
+    draw.ellipse([cx - 62, cy + 8, cx - 55, cy + 15], fill=0)
+    draw.ellipse([cx + 58, cy - 28, cx + 66, cy - 20], fill=255)
+    draw.ellipse([cx + 72, cy - 38, cx + 80, cy - 30], fill=255)
     return np.array(img) > 128
 
 def sample_pts(mask, n):
@@ -193,9 +172,9 @@ def sample_pts(mask, n):
     return np.column_stack([xs[indices], ys[indices]]).astype(np.float32)
 
 np.random.seed(42)
-pts1 = sample_pts(render_python_logo(), N_TRAVELLERS)
-pts2 = sample_pts(render_security_shield(), N_TRAVELLERS)
-pts3 = sample_pts(render_docker_logo(), N_TRAVELLERS)
+pts1 = sample_pts(render_python_hd(), N_TRAVELLERS)
+pts2 = sample_pts(render_shield_hd(), N_TRAVELLERS)
+pts3 = sample_pts(render_docker_hd(), N_TRAVELLERS)
 
 # Hungarian mapping
 col2 = linear_sum_assignment(cdist(pts1, pts2))[1]
@@ -398,4 +377,4 @@ with open(os.path.join(WORKSPACE_DIR, 'dark.svg'), 'w', encoding='utf-8') as f:
 with open(os.path.join(WORKSPACE_DIR, 'light.svg'), 'w', encoding='utf-8') as f:
     f.write(light_svg)
 
-print("SVGs successfully updated with your exact handles!")
+print("SVGs successfully updated with HD portrait & logos!")

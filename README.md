@@ -14,13 +14,13 @@
   <!-- =============================== -->
   <!-- PHASE 2: STATS & ACTIVITY CARDS -->
   <!-- =============================== -->
-  <img width="100%" src="https://streak-stats.demolab.com/?user=Abdullah-Zaheer&hide_border=true&background=0A101F&stroke=22D3EE&ring=A78BFA&fire=10B981&currStreakLabel=22D3EE&sideLabels=94A3B8&currStreakNum=F8FAFC&sideNums=F8FAFC&dates=64748B&titleColor=22D3EE&card_width=1180" alt="GitHub Streak" />
+  <img width="100%" src="https://github-readme-activity-graph.vercel.app/graph?username=Abdullah-Zaheer&bg_color=0A101F&color=22D3EE&line=A78BFA&point=10B981&area=true&hide_border=true" alt="Contribution Graph" />
   
   <br/><br/>
   
-  <img width="49%" src="https://github-readme-stats.vercel.app/api?username=Abdullah-Zaheer&show_icons=true&count_private=true&include_all_commits=true&hide_rank=true&hide_border=true&title_color=22D3EE&icon_color=A78BFA&text_color=94A3B8&bg_color=0A101F&card_width=500" alt="GitHub Stats" />
+  <img width="49%" src="https://github-readme-stats-eight-theta.vercel.app/api?username=Abdullah-Zaheer&show_icons=true&count_private=true&include_all_commits=true&hide_rank=true&hide_border=true&title_color=22D3EE&icon_color=A78BFA&text_color=94A3B8&bg_color=0A101F&card_width=500" alt="GitHub Stats" />
   &nbsp;
-  <img width="49%" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Abdullah-Zaheer&layout=compact&langs_count=8&hide_border=true&title_color=22D3EE&text_color=94A3B8&bg_color=0A101F&card_width=500" alt="Top Languages" />
+  <img width="49%" src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=Abdullah-Zaheer&layout=compact&langs_count=8&hide_border=true&title_color=22D3EE&text_color=94A3B8&bg_color=0A101F&card_width=500" alt="Top Languages" />
 
   <br/><br/>
 
