@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Dynamic Terminal GitHub Profile Banner Generator (v3 - Ultra Sharp & Extended Docker Timer)
+Dynamic Terminal GitHub Profile Banner Generator (v4 - 4 Morphing Logos including Kali Linux)
 Author: Pair-programmed for Abdullah Zaheer (@Abdullah-Zaheer)
 """
 
@@ -15,7 +15,6 @@ WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCRATCH_DIR = os.path.join(WORKSPACE_DIR, '.cache_data')
 os.makedirs(SCRATCH_DIR, exist_ok=True)
 
-# Transparent input photo
 IMG_PATH = '/Users/abdullahzaheer/.gemini/antigravity-ide/brain/035750bf-e298-44f0-ade7-0fbd033fc780/.user_uploaded/media_1787410737668.png'
 
 TOTAL_W = 1180
@@ -24,7 +23,7 @@ TOTAL_H = 610
 PORTRAIT_W = 280
 PORTRAIT_H = 320
 
-# 1. Load and process image
+# 1. Load and process portrait
 img = Image.open(IMG_PATH)
 alpha = np.array(img.split()[3])
 ys, xs = np.where(alpha > 20)
@@ -96,7 +95,7 @@ dither_light = floyd_steinberg_dither(light_input, mask)
 print(f"Dark mode portrait dots: {np.sum(dither_dark)}")
 print(f"Light mode portrait dots: {np.sum(dither_light)}")
 
-# 2. Ultra-Sharp HD Morphing Logos (1,000 Traveller Dots with Edge Contour Tracing)
+# 2. 4 Ultra-Sharp Vector Logos: Python -> Kali Linux -> Security Shield -> Docker Whale
 N_TRAVELLERS = 1000
 SCALE = 4
 SW, SH = PORTRAIT_W * SCALE, PORTRAIT_H * SCALE
@@ -105,26 +104,62 @@ def create_python_mask():
     img = Image.new('L', (SW, SH), 0)
     draw = ImageDraw.Draw(img)
     cx, cy = SW // 2, SH // 2
-    
-    # Upper Snake
     draw.rounded_rectangle([cx - 56*SCALE, cy - 68*SCALE, cx + 26*SCALE, cy - 24*SCALE], radius=16*SCALE, fill=255)
     draw.rounded_rectangle([cx + 4*SCALE, cy - 68*SCALE, cx + 56*SCALE, cy + 24*SCALE], radius=16*SCALE, fill=255)
     draw.rectangle([cx - 22*SCALE, cy - 24*SCALE, cx + 24*SCALE, cy + 6*SCALE], fill=255)
     draw.ellipse([cx - 32*SCALE, cy - 54*SCALE, cx - 18*SCALE, cy - 40*SCALE], fill=0)
-    
-    # Lower Snake
     draw.rounded_rectangle([cx - 26*SCALE, cy + 24*SCALE, cx + 56*SCALE, cy + 68*SCALE], radius=16*SCALE, fill=255)
     draw.rounded_rectangle([cx - 56*SCALE, cy - 24*SCALE, cx - 4*SCALE, cy + 68*SCALE], radius=16*SCALE, fill=255)
     draw.rectangle([cx - 24*SCALE, cy - 6*SCALE, cx + 22*SCALE, cy + 24*SCALE], fill=255)
     draw.ellipse([cx + 18*SCALE, cy + 40*SCALE, cx + 32*SCALE, cy + 54*SCALE], fill=0)
-    
+    return np.array(img.resize((PORTRAIT_W, PORTRAIT_H), Image.Resampling.LANCZOS)) > 120
+
+def create_kali_dragon_mask():
+    img = Image.new('L', (SW, SH), 0)
+    draw = ImageDraw.Draw(img)
+    cx, cy = SW // 2, SH // 2 - 5*SCALE
+    head_poly = [
+        (cx - 20*SCALE, cy - 65*SCALE), (cx - 5*SCALE, cy - 50*SCALE),
+        (cx + 15*SCALE, cy - 58*SCALE), (cx + 10*SCALE, cy - 42*SCALE),
+        (cx + 35*SCALE, cy - 35*SCALE), (cx + 30*SCALE, cy - 25*SCALE),
+        (cx + 10*SCALE, cy - 28*SCALE), (cx + 5*SCALE, cy - 20*SCALE),
+        (cx - 15*SCALE, cy - 35*SCALE), (cx - 20*SCALE, cy - 65*SCALE)
+    ]
+    draw.polygon(head_poly, fill=255)
+    wing_outer = [
+        (cx - 15*SCALE, cy - 35*SCALE), (cx - 40*SCALE, cy - 70*SCALE),
+        (cx - 48*SCALE, cy - 45*SCALE), (cx - 72*SCALE, cy - 55*SCALE),
+        (cx - 65*SCALE, cy - 30*SCALE), (cx - 82*SCALE, cy - 25*SCALE),
+        (cx - 65*SCALE, cy - 5*SCALE), (cx - 45*SCALE, cy + 15*SCALE),
+        (cx - 25*SCALE, cy - 5*SCALE), (cx - 15*SCALE, cy - 35*SCALE)
+    ]
+    draw.polygon(wing_outer, fill=255)
+    draw.polygon([(cx - 35*SCALE, cy - 48*SCALE), (cx - 44*SCALE, cy - 60*SCALE), (cx - 44*SCALE, cy - 42*SCALE)], fill=0)
+    draw.polygon([(cx - 52*SCALE, cy - 32*SCALE), (cx - 65*SCALE, cy - 46*SCALE), (cx - 60*SCALE, cy - 25*SCALE)], fill=0)
+    tail_outer = [
+        (cx - 10*SCALE, cy - 20*SCALE), (cx + 15*SCALE, cy + 5*SCALE),
+        (cx + 25*SCALE, cy + 30*SCALE), (cx + 18*SCALE, cy + 55*SCALE),
+        (cx - 5*SCALE, cy + 72*SCALE), (cx - 35*SCALE, cy + 65*SCALE),
+        (cx - 55*SCALE, cy + 42*SCALE), (cx - 40*SCALE, cy + 48*SCALE),
+        (cx - 25*SCALE, cy + 58*SCALE), (cx - 5*SCALE, cy + 56*SCALE),
+        (cx + 5*SCALE, cy + 45*SCALE), (cx + 8*SCALE, cy + 25*SCALE),
+        (cx - 5*SCALE, cy + 5*SCALE), (cx - 25*SCALE, cy - 5*SCALE),
+        (cx - 10*SCALE, cy - 20*SCALE)
+    ]
+    draw.polygon(tail_outer, fill=255)
+    spikes = [
+        [(cx + 18*SCALE, cy - 10*SCALE), (cx + 28*SCALE, cy - 14*SCALE), (cx + 22*SCALE, cy + 2*SCALE)],
+        [(cx + 26*SCALE, cy + 12*SCALE), (cx + 36*SCALE, cy + 10*SCALE), (cx + 28*SCALE, cy + 24*SCALE)],
+        [(cx + 22*SCALE, cy + 38*SCALE), (cx + 30*SCALE, cy + 42*SCALE), (cx + 18*SCALE, cy + 48*SCALE)],
+    ]
+    for sp in spikes:
+        draw.polygon(sp, fill=255)
     return np.array(img.resize((PORTRAIT_W, PORTRAIT_H), Image.Resampling.LANCZOS)) > 120
 
 def create_shield_mask():
     img = Image.new('L', (SW, SH), 0)
     draw = ImageDraw.Draw(img)
     cx, cy = SW // 2, SH // 2 - 8*SCALE
-    
     shield_outer = [
         (cx - 72*SCALE, cy - 72*SCALE), (cx + 72*SCALE, cy - 72*SCALE),
         (cx + 72*SCALE, cy - 10*SCALE), (cx + 52*SCALE, cy + 52*SCALE),
@@ -132,7 +167,6 @@ def create_shield_mask():
         (cx - 52*SCALE, cy + 52*SCALE), (cx - 72*SCALE, cy - 10*SCALE)
     ]
     draw.polygon(shield_outer, fill=255)
-    
     shield_inner = [
         (cx - 54*SCALE, cy - 54*SCALE), (cx + 54*SCALE, cy - 54*SCALE),
         (cx + 54*SCALE, cy - 10*SCALE), (cx + 38*SCALE, cy + 38*SCALE),
@@ -140,13 +174,11 @@ def create_shield_mask():
         (cx - 38*SCALE, cy + 38*SCALE), (cx - 54*SCALE, cy - 10*SCALE)
     ]
     draw.polygon(shield_inner, fill=0)
-    
     draw.rounded_rectangle([cx - 24*SCALE, cy - 38*SCALE, cx + 24*SCALE, cy - 2*SCALE], radius=12*SCALE, fill=255)
     draw.rounded_rectangle([cx - 14*SCALE, cy - 28*SCALE, cx + 14*SCALE, cy - 2*SCALE], radius=7*SCALE, fill=0)
     draw.rounded_rectangle([cx - 30*SCALE, cy - 8*SCALE, cx + 30*SCALE, cy + 38*SCALE], radius=8*SCALE, fill=255)
     draw.ellipse([cx - 7*SCALE, cy + 6*SCALE, cx + 7*SCALE, cy + 20*SCALE], fill=0)
     draw.polygon([(cx - 5*SCALE, cy + 16*SCALE), (cx + 5*SCALE, cy + 16*SCALE), (cx + 7*SCALE, cy + 30*SCALE), (cx - 7*SCALE, cy + 30*SCALE)], fill=0)
-    
     return np.array(img.resize((PORTRAIT_W, PORTRAIT_H), Image.Resampling.LANCZOS)) > 120
 
 def create_docker_mask():
@@ -154,7 +186,6 @@ def create_docker_mask():
     draw = ImageDraw.Draw(img)
     cx, cy = SW // 2, SH // 2
     cw, ch, gap = 16*SCALE, 14*SCALE, 3*SCALE
-    
     for i in range(5):
         bx = cx - 50*SCALE + i * (cw + gap)
         by = cy - 24*SCALE
@@ -166,7 +197,6 @@ def create_docker_mask():
     bx = cx - 12*SCALE
     by = cy - 24*SCALE - (ch + gap) * 2
     draw.rectangle([bx, by, bx + cw, by + ch], fill=255)
-    
     hull = [
         (cx - 82*SCALE, cy - 8*SCALE), (cx - 76*SCALE, cy + 18*SCALE), (cx - 55*SCALE, cy + 40*SCALE),
         (cx + 25*SCALE, cy + 44*SCALE), (cx + 72*SCALE, cy + 28*SCALE), (cx + 92*SCALE, cy + 8*SCALE),
@@ -177,47 +207,50 @@ def create_docker_mask():
     draw.ellipse([cx - 64*SCALE, cy + 8*SCALE, cx - 56*SCALE, cy + 16*SCALE], fill=0)
     draw.ellipse([cx + 60*SCALE, cy - 30*SCALE, cx + 68*SCALE, cy - 22*SCALE], fill=255)
     draw.ellipse([cx + 75*SCALE, cy - 40*SCALE, cx + 84*SCALE, cy - 31*SCALE], fill=255)
-    
     return np.array(img.resize((PORTRAIT_W, PORTRAIT_H), Image.Resampling.LANCZOS)) > 120
 
 def sample_sharp_pts(mask, n=N_TRAVELLERS):
     eroded = binary_erosion(mask, iterations=1)
     edges = mask & (~eroded)
     interior = eroded
-    
     edge_ys, edge_xs = np.where(edges)
     int_ys, int_xs = np.where(interior)
-    
-    n_edge = int(n * 0.55)
+    n_edge = int(n * 0.58)
     n_int = n - n_edge
-    
     if len(edge_xs) > 0:
         edge_idx = np.linspace(0, len(edge_xs) - 1, n_edge, dtype=int)
         edge_pts = np.column_stack([edge_xs[edge_idx], edge_ys[edge_idx]]).astype(np.float32)
     else:
         edge_pts = np.empty((0, 2), dtype=np.float32)
-        
     if len(int_xs) > 0:
         int_idx = np.random.choice(len(int_xs), n_int, replace=(len(int_xs) < n_int))
         int_pts = np.column_stack([int_xs[int_idx], int_ys[int_idx]]).astype(np.float32)
     else:
         int_pts = np.empty((0, 2), dtype=np.float32)
-        
     return np.vstack([edge_pts, int_pts])
 
 np.random.seed(42)
 pts1 = sample_sharp_pts(create_python_mask(), N_TRAVELLERS)
-pts2 = sample_sharp_pts(create_shield_mask(), N_TRAVELLERS)
-pts3 = sample_sharp_pts(create_docker_mask(), N_TRAVELLERS)
+pts_kali = sample_sharp_pts(create_kali_dragon_mask(), N_TRAVELLERS)
+pts_shield = sample_sharp_pts(create_shield_mask(), N_TRAVELLERS)
+pts_docker = sample_sharp_pts(create_docker_mask(), N_TRAVELLERS)
 
-# Hungarian mapping
-col2 = linear_sum_assignment(cdist(pts1, pts2))[1]
-pts2_m = pts2[col2]
-col3 = linear_sum_assignment(cdist(pts2_m, pts3))[1]
-pts3_m = pts3[col3]
-print("Optimal transport matching done.")
+# Hungarian mapping across all 4 logos:
+# pts1 (Python) -> pts_kali_m (Kali Dragon)
+col_k = linear_sum_assignment(cdist(pts1, pts_kali))[1]
+pts_kali_m = pts_kali[col_k]
 
-# 3. Build SVGs with Extended Docker Timer (17.0s total cycle)
+# pts_kali_m -> pts_shield_m (Shield)
+col_s = linear_sum_assignment(cdist(pts_kali_m, pts_shield))[1]
+pts_shield_m = pts_shield[col_s]
+
+# pts_shield_m -> pts_docker_m (Docker)
+col_d = linear_sum_assignment(cdist(pts_shield_m, pts_docker))[1]
+pts_docker_m = pts_docker[col_d]
+
+print("4-Logo Optimal transport matching completed.")
+
+# 3. Build SVGs with 20.0s Loop Cycle & Extended Docker Hold
 def build_svg_file(theme="dark"):
     is_dark = (theme == "dark")
     active_dither = dither_dark if is_dark else dither_light
@@ -242,20 +275,20 @@ def build_svg_file(theme="dark"):
     
     cx, cy = PORTRAIT_W / 2.0, PORTRAIT_H / 2.0
     
-    # 17.0s Total Loop:
+    # 20.0s Total Loop:
     # 0s - 3.0s (3.0s): Portrait
     # 3.0s - 4.2s (1.2s): Morph to Python
     # 4.2s - 6.2s (2.0s): Python Hold
-    # 6.2s - 7.4s (1.2s): Morph to Shield
-    # 7.4s - 9.4s (2.0s): Shield Hold
-    # 9.4s - 10.6s (1.2s): Morph to Docker
-    # 10.6s - 15.0s (4.4s EXTENDED DOCKER HOLD!)
-    # 15.0s - 16.2s (1.2s): Return dissolve
-    # 16.2s - 17.0s (0.8s): Settle to Portrait
+    # 6.2s - 7.4s (1.2s): Morph to Kali Linux
+    # 7.4s - 9.4s (2.0s): Kali Linux Hold
+    # 9.4s - 10.6s (1.2s): Morph to Shield
+    # 10.6s - 12.6s (2.0s): Shield Hold
+    # 12.6s - 13.8s (1.2s): Morph to Docker Whale
+    # 13.8s - 18.0s (4.2s EXTENDED DOCKER HOLD!)
+    # 18.0s - 19.2s (1.2s): Return dissolve to Portrait
+    # 19.2s - 20.0s (0.8s): Settle to Portrait
     
-    # Normalized keyTimes:
-    # [0.0, 0.176, 0.247, 0.365, 0.435, 0.553, 0.624, 0.882, 0.953, 1.0]
-    kt_str = "0;0.176;0.247;0.365;0.435;0.553;0.624;0.882;0.953;1.0"
+    kt_str = "0;0.150;0.210;0.310;0.370;0.470;0.530;0.630;0.690;0.900;0.960;1.0"
     
     svg = []
     svg.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {TOTAL_W} {TOTAL_H}" width="{TOTAL_W}" height="{TOTAL_H}">')
@@ -317,31 +350,34 @@ def build_svg_file(theme="dark"):
         
         svg.append(f'    <g>')
         svg.append(f'      <animate attributeName="opacity" from="0" to="1" dur="1.8s" begin="{intro_delay}s" fill="freeze"/>')
-        svg.append(f'      <animateTransform attributeName="transform" type="translate" dur="17.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="0 0; 0 0; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx*0.5:.1f} {avg_dy*0.5:.1f}; {avg_dx*0.5:.1f} {avg_dy*0.5:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; 0 0; 0 0"/>')
+        svg.append(f'      <animateTransform attributeName="transform" type="translate" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="0 0; 0 0; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx*0.6:.1f} {avg_dy*0.6:.1f}; {avg_dx*0.6:.1f} {avg_dy*0.6:.1f}; {avg_dx*0.4:.1f} {avg_dy*0.4:.1f}; {avg_dx*0.4:.1f} {avg_dy*0.4:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; 0 0; 0 0"/>')
         svg.append(f'      <path d="{d_str}" stroke="{portrait_dot_color}" stroke-width="1.2" shape-rendering="crispEdges">')
-        svg.append(f'        <animate attributeName="opacity" dur="17.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="1;1;0;0;0;0;0;0;1;1"/>')
+        svg.append(f'        <animate attributeName="opacity" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="1;1;0;0;0;0;0;0;0;0;1;1"/>')
         svg.append(f'      </path>')
         svg.append(f'    </g>')
         
     svg.append('  </g>')
     
-    # Layer 2: Travellers (Ultra Sharp & Extended Docker Hold)
+    # Layer 2: Travellers (4 Morphing Logos: Python -> Kali -> Shield -> Docker)
     svg.append(f'  <!-- Layer 2: Morphing Logo Travellers -->')
     svg.append(f'  <g id="travellers-layer" transform="translate({px_base}, {py_base})">')
-    trav_op_vals = "0;0;1;1;1;1;1;1;0;0"
+    trav_op_vals = "0;0;1;1;1;1;1;1;1;1;0;0"
     
     for i in range(N_TRAVELLERS):
         x1, y1 = pts1[i]
-        x2, y2 = pts2_m[i]
-        x3, y3 = pts3_m[i]
+        xk, yk = pts_kali_m[i]
+        xs, ys = pts_shield_m[i]
+        xd, yd = pts_docker_m[i]
         
-        x_vals = f"{x1:.1f};{x1:.1f};{x1:.1f};{x1:.1f};{x2:.1f};{x2:.1f};{x3:.1f};{x3:.1f};{x1:.1f};{x1:.1f}"
-        y_vals = f"{y1:.1f};{y1:.1f};{y1:.1f};{y1:.1f};{y2:.1f};{y2:.1f};{y3:.1f};{y3:.1f};{y1:.1f};{y1:.1f}"
+        # Keyframe values:
+        # [0: x1, 1: x1, 2: x1, 3: x1, 4: xk, 5: xk, 6: xs, 7: xs, 8: xd, 9: xd, 10: x1, 11: x1]
+        x_vals = f"{x1:.1f};{x1:.1f};{x1:.1f};{x1:.1f};{xk:.1f};{xk:.1f};{xs:.1f};{xs:.1f};{xd:.1f};{xd:.1f};{x1:.1f};{x1:.1f}"
+        y_vals = f"{y1:.1f};{y1:.1f};{y1:.1f};{y1:.1f};{yk:.1f};{yk:.1f};{ys:.1f};{ys:.1f};{yd:.1f};{yd:.1f};{y1:.1f};{y1:.1f}"
         
         svg.append(f'    <circle cx="{x1:.1f}" cy="{y1:.1f}" r="1.3" fill="{traveller_color}">')
-        svg.append(f'      <animate attributeName="cx" dur="17.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{x_vals}"/>')
-        svg.append(f'      <animate attributeName="cy" dur="17.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{y_vals}"/>')
-        svg.append(f'      <animate attributeName="opacity" dur="17.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{trav_op_vals}"/>')
+        svg.append(f'      <animate attributeName="cx" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{x_vals}"/>')
+        svg.append(f'      <animate attributeName="cy" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{y_vals}"/>')
+        svg.append(f'      <animate attributeName="opacity" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{trav_op_vals}"/>')
         svg.append(f'    </circle>')
         
     svg.append('  </g>')
@@ -374,7 +410,7 @@ def build_svg_file(theme="dark"):
         ("ToolChain", "VS Code · Linux · Docker · Wireshark · Git · GDB"),
         ("Core.Lang", "Python · Rust · C/C++ · Go · TypeScript · Bash"),
         ("Core.Systems", "Distributed Architecture · Low-Level Systems"),
-        ("Core.Security", "AppSec · Cryptography · Network Forensics"),
+        ("Core.Security", "Kali Linux · AppSec · Cryptography · Forensics"),
         ("Core.Infra", "Docker · Kubernetes · AWS · Linux · CI/CD"),
         ("Core.Database", "PostgreSQL · Redis · MongoDB · SQLite"),
         ("Grid.LinkedIn", "in/abdullah-zaheer-se"),
@@ -425,4 +461,4 @@ with open(os.path.join(WORKSPACE_DIR, 'dark.svg'), 'w', encoding='utf-8') as f:
 with open(os.path.join(WORKSPACE_DIR, 'light.svg'), 'w', encoding='utf-8') as f:
     f.write(light_svg)
 
-print("SVGs successfully updated with ultra-sharp logos and extended Docker timer!")
+print("SVGs successfully updated with Kali Linux dragon and extended Docker hold!")
