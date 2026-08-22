@@ -25,12 +25,20 @@
   <br/><br/>
 
   <!-- =============================== -->
-  <!-- PHASE 3: CONTRIBUTION SNAKE -->
+  <!-- PHASE 3: CONTRIBUTION SNAKE & 3D ISOMETRIC GRAPH -->
   <!-- =============================== -->
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abdullah-Zaheer/Abdullah-Zaheer/output/github-snake-dark.svg" />
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Abdullah-Zaheer/Abdullah-Zaheer/output/github-snake.svg" />
     <img alt="Contribution Snake" src="https://raw.githubusercontent.com/Abdullah-Zaheer/Abdullah-Zaheer/output/github-snake-dark.svg" width="100%" />
+  </picture>
+
+  <br/><br/>
+
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abdullah-Zaheer/Abdullah-Zaheer/main/profile-3d-contrib/profile-night-rainbow.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Abdullah-Zaheer/Abdullah-Zaheer/main/profile-3d-contrib/profile-green-animate.svg" />
+    <img alt="3D Isometric Contribution Graph" src="https://raw.githubusercontent.com/Abdullah-Zaheer/Abdullah-Zaheer/main/profile-3d-contrib/profile-night-rainbow.svg" width="100%" />
   </picture>
 
   <br/><br/>
