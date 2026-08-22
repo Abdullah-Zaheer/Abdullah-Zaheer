@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Dynamic Terminal GitHub Profile Banner Generator (v4 - 4 Morphing Logos including Kali Linux)
+Dynamic Terminal GitHub Profile Banner Generator (Custom Timings Edition)
 Author: Pair-programmed for Abdullah Zaheer (@Abdullah-Zaheer)
 """
 
@@ -95,7 +95,7 @@ dither_light = floyd_steinberg_dither(light_input, mask)
 print(f"Dark mode portrait dots: {np.sum(dither_dark)}")
 print(f"Light mode portrait dots: {np.sum(dither_light)}")
 
-# 2. 4 Ultra-Sharp Vector Logos: Python -> Kali Linux -> Security Shield -> Docker Whale
+# 2. 4 Ultra-Sharp Vector Logos: Python (1.2s) -> Kali (2.0s) -> Shield (2.2s) -> Docker (2.3s)
 N_TRAVELLERS = 1000
 SCALE = 4
 SW, SH = PORTRAIT_W * SCALE, PORTRAIT_H * SCALE
@@ -235,22 +235,19 @@ pts_kali = sample_sharp_pts(create_kali_dragon_mask(), N_TRAVELLERS)
 pts_shield = sample_sharp_pts(create_shield_mask(), N_TRAVELLERS)
 pts_docker = sample_sharp_pts(create_docker_mask(), N_TRAVELLERS)
 
-# Hungarian mapping across all 4 logos:
-# pts1 (Python) -> pts_kali_m (Kali Dragon)
+# Hungarian mapping
 col_k = linear_sum_assignment(cdist(pts1, pts_kali))[1]
 pts_kali_m = pts_kali[col_k]
 
-# pts_kali_m -> pts_shield_m (Shield)
 col_s = linear_sum_assignment(cdist(pts_kali_m, pts_shield))[1]
 pts_shield_m = pts_shield[col_s]
 
-# pts_shield_m -> pts_docker_m (Docker)
 col_d = linear_sum_assignment(cdist(pts_shield_m, pts_docker))[1]
 pts_docker_m = pts_docker[col_d]
 
 print("4-Logo Optimal transport matching completed.")
 
-# 3. Build SVGs with 20.0s Loop Cycle & Extended Docker Hold
+# 3. Build SVGs with User Requested Timings (1.2s Python, 2.0s Kali, 2.2s Shield, 2.3s Docker)
 def build_svg_file(theme="dark"):
     is_dark = (theme == "dark")
     active_dither = dither_dark if is_dark else dither_light
@@ -275,20 +272,20 @@ def build_svg_file(theme="dark"):
     
     cx, cy = PORTRAIT_W / 2.0, PORTRAIT_H / 2.0
     
-    # 20.0s Total Loop:
+    # 15.0s Total Loop:
     # 0s - 3.0s (3.0s): Portrait
-    # 3.0s - 4.2s (1.2s): Morph to Python
-    # 4.2s - 6.2s (2.0s): Python Hold
-    # 6.2s - 7.4s (1.2s): Morph to Kali Linux
-    # 7.4s - 9.4s (2.0s): Kali Linux Hold
-    # 9.4s - 10.6s (1.2s): Morph to Shield
-    # 10.6s - 12.6s (2.0s): Shield Hold
-    # 12.6s - 13.8s (1.2s): Morph to Docker Whale
-    # 13.8s - 18.0s (4.2s EXTENDED DOCKER HOLD!)
-    # 18.0s - 19.2s (1.2s): Return dissolve to Portrait
-    # 19.2s - 20.0s (0.8s): Settle to Portrait
+    # 3.0s - 3.8s (0.8s): Morph to Python
+    # 3.8s - 5.0s (1.2s): Python Hold (1.2s)
+    # 5.0s - 5.8s (0.8s): Morph to Kali
+    # 5.8s - 7.8s (2.0s): Kali Hold (2.0s)
+    # 7.8s - 8.6s (0.8s): Morph to Shield
+    # 8.6s - 10.8s (2.2s): Shield Hold (2.2s)
+    # 10.8s - 11.6s (0.8s): Morph to Docker
+    # 11.6s - 13.9s (2.3s): Docker Hold (2.3s)
+    # 13.9s - 14.7s (0.8s): Return dissolve
+    # 14.7s - 15.0s (0.3s): Settle to Portrait
     
-    kt_str = "0;0.150;0.210;0.310;0.370;0.470;0.530;0.630;0.690;0.900;0.960;1.0"
+    kt_str = "0;0.200;0.253;0.333;0.387;0.520;0.573;0.720;0.773;0.927;0.980;1.0"
     
     svg = []
     svg.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {TOTAL_W} {TOTAL_H}" width="{TOTAL_W}" height="{TOTAL_H}">')
@@ -350,15 +347,15 @@ def build_svg_file(theme="dark"):
         
         svg.append(f'    <g>')
         svg.append(f'      <animate attributeName="opacity" from="0" to="1" dur="1.8s" begin="{intro_delay}s" fill="freeze"/>')
-        svg.append(f'      <animateTransform attributeName="transform" type="translate" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="0 0; 0 0; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx*0.6:.1f} {avg_dy*0.6:.1f}; {avg_dx*0.6:.1f} {avg_dy*0.6:.1f}; {avg_dx*0.4:.1f} {avg_dy*0.4:.1f}; {avg_dx*0.4:.1f} {avg_dy*0.4:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; 0 0; 0 0"/>')
+        svg.append(f'      <animateTransform attributeName="transform" type="translate" dur="15.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="0 0; 0 0; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx*0.6:.1f} {avg_dy*0.6:.1f}; {avg_dx*0.6:.1f} {avg_dy*0.6:.1f}; {avg_dx*0.4:.1f} {avg_dy*0.4:.1f}; {avg_dx*0.4:.1f} {avg_dy*0.4:.1f}; {avg_dx:.1f} {avg_dy:.1f}; {avg_dx:.1f} {avg_dy:.1f}; 0 0; 0 0"/>')
         svg.append(f'      <path d="{d_str}" stroke="{portrait_dot_color}" stroke-width="1.2" shape-rendering="crispEdges">')
-        svg.append(f'        <animate attributeName="opacity" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="1;1;0;0;0;0;0;0;0;0;1;1"/>')
+        svg.append(f'        <animate attributeName="opacity" dur="15.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="1;1;0;0;0;0;0;0;0;0;1;1"/>')
         svg.append(f'      </path>')
         svg.append(f'    </g>')
         
     svg.append('  </g>')
     
-    # Layer 2: Travellers (4 Morphing Logos: Python -> Kali -> Shield -> Docker)
+    # Layer 2: Travellers (Exact Custom Timings: 1.2s Python, 2.0s Kali, 2.2s Shield, 2.3s Docker)
     svg.append(f'  <!-- Layer 2: Morphing Logo Travellers -->')
     svg.append(f'  <g id="travellers-layer" transform="translate({px_base}, {py_base})">')
     trav_op_vals = "0;0;1;1;1;1;1;1;1;1;0;0"
@@ -369,15 +366,13 @@ def build_svg_file(theme="dark"):
         xs, ys = pts_shield_m[i]
         xd, yd = pts_docker_m[i]
         
-        # Keyframe values:
-        # [0: x1, 1: x1, 2: x1, 3: x1, 4: xk, 5: xk, 6: xs, 7: xs, 8: xd, 9: xd, 10: x1, 11: x1]
         x_vals = f"{x1:.1f};{x1:.1f};{x1:.1f};{x1:.1f};{xk:.1f};{xk:.1f};{xs:.1f};{xs:.1f};{xd:.1f};{xd:.1f};{x1:.1f};{x1:.1f}"
         y_vals = f"{y1:.1f};{y1:.1f};{y1:.1f};{y1:.1f};{yk:.1f};{yk:.1f};{ys:.1f};{ys:.1f};{yd:.1f};{yd:.1f};{y1:.1f};{y1:.1f}"
         
         svg.append(f'    <circle cx="{x1:.1f}" cy="{y1:.1f}" r="1.3" fill="{traveller_color}">')
-        svg.append(f'      <animate attributeName="cx" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{x_vals}"/>')
-        svg.append(f'      <animate attributeName="cy" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{y_vals}"/>')
-        svg.append(f'      <animate attributeName="opacity" dur="20.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{trav_op_vals}"/>')
+        svg.append(f'      <animate attributeName="cx" dur="15.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{x_vals}"/>')
+        svg.append(f'      <animate attributeName="cy" dur="15.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{y_vals}"/>')
+        svg.append(f'      <animate attributeName="opacity" dur="15.0s" repeatCount="indefinite" keyTimes="{kt_str}" values="{trav_op_vals}"/>')
         svg.append(f'    </circle>')
         
     svg.append('  </g>')
@@ -461,4 +456,4 @@ with open(os.path.join(WORKSPACE_DIR, 'dark.svg'), 'w', encoding='utf-8') as f:
 with open(os.path.join(WORKSPACE_DIR, 'light.svg'), 'w', encoding='utf-8') as f:
     f.write(light_svg)
 
-print("SVGs successfully updated with Kali Linux dragon and extended Docker hold!")
+print("SVGs successfully updated with your exact custom timings!")
