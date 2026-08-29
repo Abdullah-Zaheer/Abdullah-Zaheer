@@ -25,7 +25,7 @@
   <br/><br/>
 
   <!-- =============================== -->
-  <!-- PHASE 3: CONTRIBUTION SNAKE & 3D ISOMETRIC GRAPH -->
+  <!-- PHASE 3: CONTRIBUTION SNAKE & 3D GRAPH -->
   <!-- =============================== -->
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abdullah-Zaheer/Abdullah-Zaheer/output/github-snake-dark.svg" />
