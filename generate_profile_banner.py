@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Dynamic Terminal GitHub Profile Banner Generator (Custom Timings Edition)
-Author: Pair-programmed for Abdullah Zaheer (@Abdullah-Zaheer)
+Author: Abdullah Zaheer (@Abdullah-Zaheer)
 """
 
 import os
