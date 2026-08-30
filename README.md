@@ -14,7 +14,7 @@
   <!-- =============================== -->
   <!-- PHASE 2: STATS & ACTIVITY CARDS -->
   <!-- =============================== -->
-  <img width="100%" src="https://github-readme-activity-graph.vercel.app/graph?username=Abdullah-Zaheer&bg_color=0A101F&color=22D3EE&line=A78BFA&point=10B981&area=true&hide_border=true" alt="Contribution Graph" />
+  <img width="100%" src="https://streak-stats.demolab.com?user=Abdullah-Zaheer&theme=dark&background=0A101F&border=22D3EE&stroke=22D3EE&ring=22D3EE&fire=A78BFA&currStreakNum=22D3EE&sideNums=F8FAFC&currStreakLabel=22D3EE&sideLabels=94A3B8&dates=94A3B8&hide_border=true" alt="GitHub Streak Stats" />
   
   <br/><br/>
   
